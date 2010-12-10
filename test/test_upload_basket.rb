@@ -30,10 +30,11 @@ class TestUploadBasket < Test::Unit::TestCase
         file_name = File.basename(file_path)
         file_size = File.size(file_path)
         file_type = MIME::Types.type_for(file_path).first.content_type
+        param_name = "upload_basket_#{Rack::UploadBasket::Helper.hash_key}"
         context("on post /upload_basket with example file #{file_name}") {
           setup {
             post "/upload_basket", {},
-              post_file_data("upload_basket", file_path, file_type)
+              post_file_data(param_name, file_path, file_type)
           }
           should("receive the file and send back an overview") {
             assert last_response.ok?
@@ -44,7 +45,18 @@ class TestUploadBasket < Test::Unit::TestCase
               %r{(['"]?)size\1: *#{file_size}\b}
             assert last_response.body =~
               %r{(['"]?)content_type\1: *(['"])#{file_type}\2}
+            assert last_response.body =~
+              %r{(['"]?)param\1: *(['"])#{param_name}\2}
           }
+        }
+      }
+
+      context("on post /upload_basket without a file") {
+        setup {
+          post "/upload_basket", {}, {}
+        }
+        should("receive the file and send back an overview") {
+          assert ! last_response.ok?
         }
       }
     }
