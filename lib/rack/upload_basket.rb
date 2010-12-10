@@ -1,6 +1,7 @@
 require 'rack'
 require 'json'
 require 'fileutils'
+require 'rack/upload_basket/helper'
 
 module Rack
   class UploadBasket

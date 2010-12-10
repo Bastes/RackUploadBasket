@@ -1,11 +1,7 @@
 require 'helper'
 
 class TestUploadBasket < Test::Unit::TestCase
-  include Rack::Test::Methods
-
-  def app
-    Rack::UploadBasket.new @endpoint, @params
-  end
+  include RackTestCase
 
   context("(default params)") {
     setup {

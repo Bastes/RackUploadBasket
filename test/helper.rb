@@ -17,6 +17,18 @@ $:.unshift(File.dirname(__FILE__))
 require 'rack/upload_basket'
 
 class Test::Unit::TestCase
+end
+
+module RackTestCase
+  def self.included(base)
+    base.send :include, Rack::Test::Methods
+    base.extend ClassMethods
+  end
+
+  def app
+    Rack::UploadBasket.new @endpoint, @params
+  end
+
   def post_file_data(param_name, file_path, content_type)
     file_name = File.basename(file_path)
     boundary = "AaB03x"
@@ -32,13 +44,15 @@ class Test::Unit::TestCase
       "CONTENT_LENGTH" => data.length, :input => data }
   end
 
-  def self.example_file(number)
-    @_detection ||= %r{\Aexample_file_([0-9]+)\.\w+\Z}
-    @_resources ||= File.join(File.dirname(__FILE__), "resources")
-    @_files ||= Hash[*(Dir.open(@_resources).
-                           grep(@_detection).
-                           map { |f| [f[@_detection, 1].to_i, f] }.
-                           flatten)]
-    File.join(@_resources, @_files[number])
+  module ClassMethods
+    def example_file(number)
+      @_detection ||= %r{\Aexample_file_([0-9]+)\.\w+\Z}
+      @_resources ||= File.join(File.dirname(__FILE__), "resources")
+      @_files ||= Hash[*(Dir.open(@_resources).
+                             grep(@_detection).
+                             map { |f| [f[@_detection, 1].to_i, f] }.
+                             flatten)]
+      File.join(@_resources, @_files[number])
+    end
   end
 end
