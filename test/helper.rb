@@ -22,6 +22,8 @@ end
 module RackTestCase
   def self.included(base)
     base.send :include, Rack::Test::Methods
+    base.send :include, TransientMethods
+    base.extend TransientMethods
     base.extend ClassMethods
   end
 
@@ -42,6 +44,12 @@ module RackTestCase
            "\r\n"
     { "CONTENT_TYPE" => "multipart/form-data, boundary=\"#{boundary}\"",
       "CONTENT_LENGTH" => data.length, :input => data }
+  end
+
+  module TransientMethods
+    def example_param_name
+      "upload_basket_#{Rack::UploadBasket::Helper.hash_key}"
+    end
   end
 
   module ClassMethods
