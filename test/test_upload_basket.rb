@@ -48,6 +48,20 @@ class TestUploadBasket < Test::Unit::TestCase
             assert last_response.body =~
               %r{(['"]?)param\1: *(['"])#{param_name}\2}
           }
+          should("store the file in the basket directory with its metadata") {
+            dir = Rack::UploadBasket::DEFAULT_DIR
+            file = File.join(dir, "#{param_name}.file")
+            meta = File.join(dir, "#{param_name}.meta")
+            data = YAML.load_file(meta)
+            assert File.exists?(dir)
+            assert File.exists?(file)
+            assert File.exists?(meta)
+            assert FileUtils.compare_file(file_path, file)
+            assert_equal file_name, data[:filename]
+            assert_equal file_size, data[:size]
+            assert_equal file_type, data[:content_type]
+            assert_equal param_name, data[:param]
+          }
         }
       }
 
