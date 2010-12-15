@@ -39,14 +39,11 @@ class TestUploadBasket < Test::Unit::TestCase
           should("receive the file and send back an overview") {
             assert last_response.ok?
             assert_equal "application/json", last_response.content_type
-            assert last_response.body =~
-              %r{(['"]?)filename\1: *(['"])#{file_name}\2}
-            assert last_response.body =~
-              %r{(['"]?)size\1: *#{file_size}\b}
-            assert last_response.body =~
-              %r{(['"]?)content_type\1: *(['"])#{file_type}\2}
-            assert last_response.body =~
-              %r{(['"]?)param\1: *(['"])#{param_name}\2}
+            data = JSON.parse(last_response.body)
+            assert data["filename"] == file_name
+            assert data["size"] == file_size
+            assert data["content_type"] == file_type
+            assert data["param"] == param_name
           }
           should("store the file in the basket directory with its metadata") {
             dir = Rack::UploadBasket::DEFAULT_DIR
