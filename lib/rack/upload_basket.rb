@@ -42,7 +42,8 @@ module Rack
           store_path = ::File.join(directory, "#{param_key}.file")
           meta_path = ::File.join(directory, "#{param_key}.meta")
           FileUtils.mv upload[:tempfile].path, store_path
-          ::File.open(meta_path, 'w') { |f| f << YAML.dump(meta) }
+          upload.delete :tempfile
+          ::File.open(meta_path, 'w') { |f| f << YAML.dump(upload) }
           [200, {"Content-Type" => "application/json"}, [meta.to_json]]
         rescue
           [400, {"Content-Type" => "text/plain"}, [""]]

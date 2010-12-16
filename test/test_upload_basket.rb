@@ -55,9 +55,7 @@ class TestUploadBasket < Test::Unit::TestCase
             assert File.exists?(meta)
             assert FileUtils.compare_file(file_path, file)
             assert_equal file_name, data[:filename]
-            assert_equal file_size, data[:size]
-            assert_equal file_type, data[:content_type]
-            assert_equal param_name, data[:param]
+            assert_equal file_type, data[:type]
           }
         }
       }
